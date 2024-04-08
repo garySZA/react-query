@@ -4,12 +4,13 @@ import { LabelPicker } from '../components/LabelPicker';
 import { useIssues } from '../hooks';
 import { LoadingIcon } from '../../shared/components/LoadingIcon';
 import { State } from '../interfaces';
+import { useIssuesInfinite } from '../hooks';
 
 
-export const ListView = () => {
+export const ListViewInfinite = () => {
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [state, setState] = useState<State>();
-  const { issuesQuery, page, nextPage, prevPage } = useIssues({ state, labels: selectedLabels });
+  const { issuesQuery } = useIssuesInfinite({ state, labels: selectedLabels });
 
   const onLabelChange = ( labelName: string ) => {
     ( selectedLabels.includes( labelName ) )
@@ -25,28 +26,18 @@ export const ListView = () => {
           issuesQuery.isLoading
             ? (<LoadingIcon />)
             : (<IssueList 
-                issues={ issuesQuery.data || [] }
+                issues={ issuesQuery.data?.pages.flat() || [] }
                 state={ state }
                 onStateChanged={ (newState) => setState( newState ) }  
               />)
         }
-      <div className="d-flex mt-2 justify-content-between align-items-center">
-        <button 
-          disabled={ issuesQuery.isFetching }
-          className='btn btn-outline-primary'
-          onClick={ prevPage }
-        >
-          Prev
+      <button 
+        disabled={ !issuesQuery.hasNextPage }
+        className='btn btn-outline-primary mt-2'
+        onClick={ () => issuesQuery.fetchNextPage() }
+      >
+          Load More
         </button>
-        <span>{ page }</span>
-        <button 
-          disabled={ issuesQuery.isFetching }
-          className='btn btn-outline-primary'
-          onClick={ nextPage }
-        >
-          Next
-        </button>
-      </div>
     </div>
       
 

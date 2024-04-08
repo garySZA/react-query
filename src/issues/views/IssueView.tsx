@@ -15,6 +15,8 @@ export const IssueView = () => {
   if( !issueQuery.data )
     return ( <Navigate to="./issues/list"/> );
 
+  console.log(commentsQuery, 'sss')
+
   return (
     <div className="row mb-5">
       <div className="col-12 mb-3">
